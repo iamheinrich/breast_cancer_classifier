@@ -37,6 +37,10 @@ import src.modeling.models as models
 import src.data_loading.loading as loading
 from src.constants import VIEWS, VIEWANGLES, LABELS, MODELMODES
 
+#DEBUG SERVER
+# import pydevd_pycharm
+# pydevd_pycharm.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True, suspend=False)
+
 
 def load_model(parameters):
     """
