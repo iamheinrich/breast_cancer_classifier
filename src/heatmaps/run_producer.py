@@ -309,6 +309,8 @@ def load_model(parameters):
     """
     if (parameters["device_type"] == "gpu") and torch.has_cudnn:
         device = torch.device("cuda:{}".format(parameters["gpu_number"]))
+    elif parameters["device_type"] == "mps" and torch.backends.mps.is_available():
+        device = torch.device("mps")
     else:
         device = torch.device("cpu")
 
@@ -338,7 +340,7 @@ def main():
     parser.add_argument('--batch-size', default=100, type=int)
     parser.add_argument('--output-heatmap-path', required=True)
     parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--device-type', default="cpu", choices=['gpu', 'cpu'])
+    parser.add_argument('--device-type', default="cpu", choices=['gpu', 'cpu', 'mps'])
     parser.add_argument("--gpu-number", type=int, default=0)
     parser.add_argument("--use-hdf5", action="store_true")
     args = parser.parse_args()

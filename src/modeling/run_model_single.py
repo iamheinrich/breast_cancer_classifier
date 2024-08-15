@@ -33,7 +33,6 @@ import src.utilities.tools as tools
 import src.modeling.models as models
 import src.data_loading.loading as loading
 
-
 class ModelInput:
     def __init__(self, image, heatmaps, metadata):
         self.image = image
@@ -72,6 +71,7 @@ def load_inputs(image_path, metadata_path,
         assert benign_heatmap_path is None
         assert malignant_heatmap_path is None
     metadata = pickling.unpickle_from_file(metadata_path)
+
     image = loading.load_image(
         image_path=image_path,
         view=metadata["full_view"],

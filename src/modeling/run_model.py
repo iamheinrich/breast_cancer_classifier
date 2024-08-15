@@ -52,6 +52,8 @@ def load_model(parameters):
 
     if (parameters["device_type"] == "gpu") and torch.has_cudnn:
         device = torch.device("cuda:{}".format(parameters["gpu_number"]))
+    elif parameters["device_type"] == "mps" and torch.backends.mps.is_available():
+        device = torch.device("mps")
     else:
         device = torch.device("cpu")
     model = model.to(device)
@@ -128,7 +130,9 @@ def run_model(model, device, exam_list, parameters):
                 batch_predictions = compute_batch_predictions(output, mode=parameters["model_mode"])
                 pred_df = pd.DataFrame({k: v[:, 1] for k, v in batch_predictions.items()})
                 pred_df.columns.names = ["label", "view_angle"]
-                predictions = pred_df.T.reset_index().groupby("label").mean().T[LABELS.LIST].values
+                # predictions = pred_df.T.reset_index().groupby("label").mean().T[LABELS.LIST].values
+                predictions = pred_df.T.reset_index().drop('view_angle', axis=1).groupby("label").mean().T[
+                    LABELS.LIST].values
                 predictions_for_datum.append(predictions)
             predictions_ls.append(np.mean(np.concatenate(predictions_for_datum, axis=0), axis=0))
 
@@ -207,7 +211,7 @@ def main():
     parser.add_argument('--use-augmentation', action="store_true")
     parser.add_argument('--use-hdf5', action="store_true")
     parser.add_argument('--num-epochs', default=1, type=int)
-    parser.add_argument('--device-type', default="cpu", choices=['gpu', 'cpu'])
+    parser.add_argument('--device-type', default="cpu", choices=['gpu', 'cpu', 'mps'])
     parser.add_argument("--gpu-number", type=int, default=0)
     args = parser.parse_args()
 
