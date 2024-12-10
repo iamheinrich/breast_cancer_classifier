@@ -4,3 +4,7 @@
 sample_output/
 /venv/
 /verify_mps.py
+/tests/
+/vin_dr_mamo_data/
+/test.ipynb
+.DS_Store
