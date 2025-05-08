@@ -35,9 +35,8 @@ This work directly contributes to **Objective 3** of the MAIBAI consortium proje
 ### 2.2. Computational Resources
 
 - **Option A (Preferred for MAIBAI GitLab Integration):**
-  - **Platform:** MAIBAI GitLab instance.
+  - **Platform:** MAIBAI GitLab instance. The entire thesis project, structured with the adapted NYU classifier as a Git submodule, will be hosted here.
   - **Compute:** Google Cloud GPU resources accessible via MAIBAI GitLab.
-  - **Storage:** Google Cloud Storage (GCS) for datasets and model artifacts.
 - **Option B (Contingency/Alternative Dataset):**
   - **Platform:** University High-Performance Computing (HPC) cluster.
   - **Dataset:** Potentially VINDR-MAMO for initial development/testing if OMI-DB access on GCP is delayed.
@@ -46,14 +45,14 @@ This work directly contributes to **Objective 3** of the MAIBAI consortium proje
 ### 2.3. Key Software & Libraries
 
 - **Programming Language:** Python 3.x (TBD)
-- **Core ML Framework:** PyTorch
-- **ML Workflow Management:** PyTorch Lightning
-- **Data Handling:** Pandas, NumPy, H5Py, OpenCV-Python, Pillow
+- **Core ML Framework:** PyTorch 2.2.0
+- **ML Workflow Management:** PyTorch Lightning 2.2.x
+- **Data Handling:** Pandas, NumPy (<2.0), H5Py, OpenCV-Python, Pillow, pydicom
 - **Cloud Interaction:** `google-cloud-storage` Python client
 - **Fairness Toolkit:** Doleus (custom open-source package, pip installable)
 - **Original Model Dependencies (from NYU `requirements.txt` - subject to upgrade):**
-  - `torch>=0.4.1` (Target: Upgrade to modern PyTorch compatible with Lightning, e.g., 1.13+ or 2.x)
-  - `torchvision>=0.2.0` (Target: Upgrade)
+  - `torch>=0.4.1` (Upgraded to PyTorch 2.2.0)
+  - `torchvision>=0.2.0` (Upgraded to Torchvision 0.17.0)
   - `scipy>=1.0.0`
   - `imageio>=2.4.1`
   - `tqdm>=4.19.8`
@@ -226,7 +225,7 @@ Retraining models with a loss function that incorporates a fairness penalty can 
 |
 |-- tests/ # Unit/integration tests (aspirational)
 |
-|-- original_nyu_classifier/ # Optional: Git submodule or copy of the original NYU code for reference
+|-- original_nyu_classifier/ # Git submodule: Fork of the original NYU code, adapted for this thesis (PyTorch 2.2.0+, etc.). Contains its own Git history.
 | |-- src/
 | |-- ...
 |
@@ -237,7 +236,7 @@ Retraining models with a loss function that incorporates a fairness penalty can 
 ## 8. Timeline & Milestones (High-Level - 3 Months @ 20hrs/week)
 
 - **Month 1: Setup, Data Pipeline, and NYU Model Porting & Initial Training**
-  - Weeks 1-2: Detailed environment setup (local, GCP/GitLab), OMI-DB access, W&B setup. **Crucial: De-risk PyTorch 0.4.1 to modern PyTorch port for NYU model (`src/modeling/models.py`, `src/modeling/layers.py`).**
+  - Weeks 1-2: Detailed environment setup (local, GCP/GitLab), OMI-DB access, W&B setup. **NYU Model Porting Update: Successfully upgraded from PyTorch 0.4.1 to PyTorch 2.2.0, Torchvision 0.17.0, and PyTorch Lightning 2.2.x. Core pipeline functionality confirmed with `run.sh` and `run_single.sh` scripts.**
   - Weeks 3-4: Implement OMI-DB preprocessing (run existing scripts). Develop `LightningDataModule` for GCS data. Get ported NYU model training in Lightning on a subset of data.
 - **Month 2: Baseline Models, Full Training, Initial Fairness Evaluation**
   - Weeks 5-6: Implement and train baseline models.
@@ -250,7 +249,7 @@ Retraining models with a loss function that incorporates a fairness penalty can 
 ## 9. Potential Risks & Mitigation
 
 - **Risk: PyTorch Upgrade Complexity:** Porting NYU model from PyTorch 0.4.1 is difficult and time-consuming.
-  - **Mitigation:** Strict time-box (1-2 weeks) for initial porting feasibility assessment. If major issues, consult supervisor to simplify model scope or extend timeline.
+  - **Mitigation:** **Update:** The initial upgrade to PyTorch 2.2.0, Torchvision 0.17.0, and PyTorch Lightning 2.2.x was successful, and basic pipeline scripts are running. This significantly de-risks the model porting effort. Further complexities might arise during the full refactoring to PyTorch Lightning, but the core compatibility is confirmed. Strict time-box (1-2 weeks) for initial porting feasibility assessment. If major issues, consult supervisor to simplify model scope or extend timeline.
 - **Risk: Data Access/Pipeline Delays:** Issues with OMI-DB access or GCS integration.
   - **Mitigation:** Early testing of data access. Have VINDR-MAMO as a potential fallback for initial development (though OMI-DB is primary).
 - **Risk: Doleus Integration Challenges:** Unexpected issues making Doleus work with model outputs.
