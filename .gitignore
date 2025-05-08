@@ -8,3 +8,4 @@ sample_output/
 /vin_dr_mamo_data/
 /test.ipynb
 .DS_Store
+summary_statistics_omidb.py
