@@ -1,23 +1,23 @@
 #!/bin/bash
 
 NUM_PROCESSES=10
-DEVICE_TYPE='mps'
+DEVICE_TYPE='mps' # Change that according to your device
 NUM_EPOCHS=10
 HEATMAP_BATCH_SIZE=22
 GPU_NUMBER=0
 
-DATA_FOLDER='omi_db_data/images'
-INITIAL_EXAM_LIST_PATH='omi_db_data/exam_list_before_cropping.pkl'
+DATA_FOLDER='sample_data_omi_db/images'
+INITIAL_EXAM_LIST_PATH='sample_data_omi_db/exam_list_before_cropping.pkl'
 PATCH_MODEL_PATH='models/sample_patch_model.p'
 IMAGE_MODEL_PATH='models/sample_image_model.p'
 IMAGEHEATMAPS_MODEL_PATH='models/sample_imageheatmaps_model.p'
 
-CROPPED_IMAGE_PATH='omi_db_data/cropped_images'
-CROPPED_EXAM_LIST_PATH='omi_db_data/cropped_images/cropped_exam_list.pkl'
-EXAM_LIST_PATH='omi_db_data/data.pkl'
-HEATMAPS_PATH='omi_db_data/heatmaps'
-IMAGE_PREDICTIONS_PATH='omi_db_data/image_predictions.csv'
-IMAGEHEATMAPS_PREDICTIONS_PATH='omi_db_data/imageheatmaps_predictions.csv'
+CROPPED_IMAGE_PATH='sample_data_omi_db/cropped_images'
+CROPPED_EXAM_LIST_PATH='sample_data_omi_db/cropped_images/cropped_exam_list.pkl'
+EXAM_LIST_PATH='sample_data_omi_db/data.pkl'
+HEATMAPS_PATH='sample_data_omi_db/heatmaps'
+IMAGE_PREDICTIONS_PATH='sample_data_omi_db/image_predictions.csv'
+IMAGEHEATMAPS_PREDICTIONS_PATH='sample_data_omi_db/imageheatmaps_predictions.csv'
 export PYTHONPATH=$(pwd):$PYTHONPATH
 
 echo 'Stage 1: Crop Mammograms'

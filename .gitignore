@@ -5,7 +5,27 @@ sample_output/
 /venv/
 /verify_mps.py
 /tests/
-/vin_dr_mamo_data/
 /test.ipynb
 .DS_Store
 summary_statistics_omidb.py
+
+/sample_data/cropped_images/
+/sample_data/heatmaps/
+/sample_data/data.pkl
+/sample_data/image_predictions.csv
+/sample_data/imageheatmaps_predictions.csv
+
+/omi_db_data/cropped_images/
+/omi_db_data/heatmaps/
+/omi_db_data/data.pkl # This is a generated exam list
+/omi_db_data/image_predictions.csv
+/omi_db_data/imageheatmaps_predictions.csv
+
+/vin_dr_mamo_data/cropped_images/
+/vin_dr_mamo_data/heatmaps/
+/vin_dr_mamo_data/data.pkl # This is a generated exam list
+/vin_dr_mamo_data/image_predictions.csv
+/vin_dr_mamo_data/imageheatmaps_predictions.csv
+
+/sample_single_output/
+/src/__pycache__/
