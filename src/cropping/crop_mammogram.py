@@ -180,15 +180,15 @@ def crop_img_from_largest_connected(img, mode, erode_dialate=True, iterations=10
 
     # Erosion in order to remove thin lines in the background
     if erode_dialate:
-        img_mask = scipy.ndimage.morphology.binary_erosion(img_mask, iterations=iterations)
+        img_mask = scipy.ndimage.binary_erosion(img_mask, iterations=iterations)#scipy.ndimage.morphology.binary_erosion(img_mask, iterations=iterations)
 
     # Select mask for largest connected component
     largest_mask = get_mask_of_largest_connected_component(img_mask)
 
     # Dilation to recover the original mask, excluding the thin lines
     if erode_dialate:
-        largest_mask = scipy.ndimage.morphology.binary_dilation(largest_mask, iterations=iterations)
-    
+        largest_mask = scipy.ndimage.binary_dilation(largest_mask, iterations=iterations)#scipy.ndimage.morphology.binary_dilation(largest_mask, iterations=iterations)
+
     # figure out where to crop
     y_edge_top, y_edge_bottom = get_edge_values(img, largest_mask, "y")
     x_edge_left, x_edge_right = get_edge_values(img, largest_mask, "x")

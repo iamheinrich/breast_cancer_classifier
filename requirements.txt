@@ -2,6 +2,7 @@ torch==2.2.0
 torchvision==0.17.0
 numpy>=1.14.3,<2.0
 scipy>=1.0.0
+scikit-learn
 h5py>=2.7.1
 imageio>=2.4.1
 pandas>=0.22.0
@@ -10,4 +11,5 @@ opencv-python>=3.4.2
 pillow>=6.2.2
 pypng
 pydicom
+omidb
 pytorch-lightning>=2.2.0,<2.3.0

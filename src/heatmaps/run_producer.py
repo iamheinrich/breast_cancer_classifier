@@ -307,7 +307,7 @@ def load_model(parameters):
     """
     Load trained patch classifier
     """
-    if (parameters["device_type"] == "gpu") and torch.has_cudnn:
+    if (parameters["device_type"] == "gpu") and torch.backends.cudnn.is_available():#torch.has_cudnn:
         device = torch.device("cuda:{}".format(parameters["gpu_number"]))
     elif parameters["device_type"] == "mps" and torch.backends.mps.is_available():
         device = torch.device("mps")

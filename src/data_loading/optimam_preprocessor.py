@@ -8,6 +8,7 @@ import png
 import numpy as np
 import pickle
 from enum import Enum
+import argparse
 
 class View(str, Enum):
     """Standard mammographic views"""
@@ -43,9 +44,13 @@ class OptimamPreprocessor:
             ignore_missing_images=False
         )
         
-    def get_clients(self) -> List[client.Client]:
+    def get_clients(self, sortClients = True) -> List[client.Client]:
         """Get all clients from the database."""
-        return [client for client in self.db]
+        c_list = [client for client in self.db]
+        if sortClients:
+            sortInx = sorted(range(len(c_list)), key=lambda k: c_list[k].id)
+            c_list = [c_list[inx] for inx in sortInx]
+        return c_list
     
     def is_screening_event(self, study: study.Study) -> bool:
         """
@@ -132,6 +137,9 @@ class OptimamPreprocessor:
                     exam_list.append(study_dict)
                     exam_list_img_paths.append(study_img_paths)
                     
+                if num_exams and len(exam_list) >= num_exams:
+                    break
+                    
         return exam_list, exam_list_img_paths
     
     @staticmethod
@@ -147,7 +155,7 @@ class OptimamPreprocessor:
             png_path: Path to output PNG file
         """
         try:
-            dicom_file = pydicom.read_file(str(dicom_path))
+            dicom_file = pydicom.dcmread(str(dicom_path))#read_file(str(dicom_path))
             image = dicom_file.pixel_array
             
             # Normalize pixel values to full 16-bit range
@@ -205,14 +213,27 @@ class OptimamPreprocessor:
 
 def main():
     """Main function to demonstrate usage."""
-    config = DatabaseConfig(
-        data_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/OMI-DB Sample/DATA'),
-        images_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/OMI-DB Sample/IMAGES'),
-        output_path=Path('/Users/hendrik/Studium/Master/Thesis/Code/breast_cancer_classifier/omi_db_data_test')
-    )
+    if False:
+        config = DatabaseConfig(
+            data_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/OMI-DB Sample/DATA'),
+            images_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/OMI-DB Sample/IMAGES'),
+            output_path=Path('/Users/hendrik/Studium/Master/Thesis/Code/breast_cancer_classifier/omi_db_data_test')
+        )
+    else:
+        parser = argparse.ArgumentParser(description='Generate Exam List')
+        parser.add_argument('--exams-path', required=True)
+        parser.add_argument('--data-path', required=True)
+        parser.add_argument('--sample-input-path', required=True)
+        parser.add_argument('--num-exam-samples', required=False, default=np.Inf, type=int)
+        args = parser.parse_args()
+        config = DatabaseConfig(
+            data_path=Path(args.data_path),
+            images_path=Path(args.exams_path),
+            output_path=Path(args.sample_input_path)
+        )
     
     preprocessor = OptimamPreprocessor(config)
-    preprocessor.generate_nyu_classifier_input_pickle(num_exams=4)
+    preprocessor.generate_nyu_classifier_input_pickle(num_exams=args.num_exam_samples)
 
 if __name__ == "__main__":
     main()

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 NUM_PROCESSES=10
-DEVICE_TYPE='mps' # Change that according to your device
+DEVICE_TYPE='gpu' # Change that according to your device
 NUM_EPOCHS=10
-HEATMAP_BATCH_SIZE=22
+HEATMAP_BATCH_SIZE=100
 GPU_NUMBER=0
 
 DATA_FOLDER='sample_data_omi_db/images'

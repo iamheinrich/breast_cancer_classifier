@@ -54,7 +54,7 @@ def load_model(parameters):
     model = model_class(input_channels)
     model.load_state_dict(torch.load(parameters["model_path"])["model"])
 
-    if (parameters["device_type"] == "gpu") and torch.has_cudnn:
+    if (parameters["device_type"] == "gpu") and torch.backends.cudnn.is_available():#torch.has_cudnn:
         device = torch.device("cuda:{}".format(parameters["gpu_number"]))
     elif parameters["device_type"] == "mps" and torch.backends.mps.is_available():
         device = torch.device("mps")
