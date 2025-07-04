@@ -181,7 +181,7 @@ def v_get_topleft_bottomright_partialsum(cumsum, topleft, bottomright):
     return bottomright_slice - topslice - leftslice + topleft_slice
 
 
-def get_rightmost_pixel_constraint(rightmost_x):
+def get_rightmost_pixel_constraint(rightmost_x, corrected = True):
     """
     Given a rightmost_x (x-coord of rightmost nonzero pixel),
     return a constraint function that remaps candidate tl/brs
@@ -190,7 +190,7 @@ def get_rightmost_pixel_constraint(rightmost_x):
     (Should reduce 2D search to 1D)
     """
 
-    def _f(tl, br, image, window_dim, rightmost_x_=rightmost_x):
+    def _f(tl, br, image, window_dim, rightmost_x_=rightmost_x, corrected=corrected):
         if tl[1] == br[1]:
             # We have no room to shift the center-X anyway
             return tl, br
@@ -198,14 +198,17 @@ def get_rightmost_pixel_constraint(rightmost_x):
         tl = tl.copy()
         br = br.copy()
         new_x = rightmost_x_ - half_dim_x
-        tl[1] = new_x - 1
+        if corrected:
+            tl[1] = min(tl[1], new_x - 1) #new_x - 1 # TODO sollte das hier nicht auf min(tl[1], nex_x -1) mappen?
+        else:
+            tl[1] = new_x - 1
         br[1] = new_x
         return tl, br
 
     return _f
 
 
-def get_bottomrightmost_pixel_constraint(rightmost_x, bottommost_y):
+def get_bottomrightmost_pixel_constraint(rightmost_x, bottommost_y, corrected = True):
     """
     Given a rightmost_x (x-coord of rightmost nonzero pixel),
     return a constraint function that remaps candidate tl/brs
@@ -215,7 +218,7 @@ def get_bottomrightmost_pixel_constraint(rightmost_x, bottommost_y):
     """
 
     def _f(tl, br, image, window_dim,
-           bottommost_y_=bottommost_y, rightmost_x_=rightmost_x):
+           bottommost_y_=bottommost_y, rightmost_x_=rightmost_x, corrected=corrected):
 
         # Check for empty rows at bottom
         relevant_image_from_right = image[:, -window_dim[1]:]
@@ -226,7 +229,12 @@ def get_bottomrightmost_pixel_constraint(rightmost_x, bottommost_y):
 
         half_dim = window_dim // 2
         br = np.array([bottommost_y_, rightmost_x_]) - half_dim
-        tl = br - 1
+        if corrected:
+            tl[1] = min(tl[1], br[1] - 1)
+            tl[0] = min(tl[0], br[0] - 1)
+        else:
+            tl = br - 1 
+        #TODO isn't a mistake? tl = br - 1 
 
         return tl, br
 

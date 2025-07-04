@@ -125,6 +125,50 @@ def pad_to_aspect_ratio(image, target_aspect_ratio):
 
 from ..cropping.crop_mammogram import crop_img_from_largest_connected, image_orientation
 def crop_image(dicom, image):
-    cropping_info = crop_img_from_largest_connected(image, image_orientation(dicom.FieldOfViewHorizontalFlip, dicom.ImageLaterality))
-    crop_coords = cropping_info[0]
-    return image[crop_coords[0]:crop_coords[1],crop_coords[2]:crop_coords[3]]
+    window_location, rightmost_points, bottommost_points, distance_from_starting_side = crop_img_from_largest_connected(image, image_orientation(dicom.FieldOfViewHorizontalFlip, dicom.ImageLaterality))
+
+    top, bottom, left, right = window_location
+    dicom.rightmost_points = rightmost_points
+    dicom.bottommost_points = bottommost_points
+    dicom.distance_from_starting_side = distance_from_starting_side
+
+    return dicom, image[top:bottom, left:right]
+
+
+import src.optimal_centers.calc_optimal_centers as calc_optimal_centers
+# creates all feasible windows of a target image size and chooses the one with most share of non-zero pixels.
+# Note: I think there was an error in the implementation of the NYU-guys, concerning the construction of the feasible windows. I corrected for it.
+#       It only manifests if x-window-range becomes smaller than the actual cropped image size
+def extract_center(dicom, image, target_dims = {'CC': (2677, 1942), 'MLO': (2974, 1748)}, corrected = True):
+    """
+    Compute the optimal center for an image
+    """
+    dicom, image = flip_image_left(dicom, image)
+    if not hasattr(dicom, 'rightmost_points'):
+        dicom, image = crop_image(dicom, image)
+    
+    if dicom.ViewPosition == "MLO":
+        tl_br_constraint = calc_optimal_centers.get_bottomrightmost_pixel_constraint(
+            rightmost_x=dicom.rightmost_points[1],
+            bottommost_y=dicom.bottommost_points[0], corrected=corrected,
+        )
+    elif dicom.ViewPosition == "CC":
+        tl_br_constraint = calc_optimal_centers.get_rightmost_pixel_constraint(
+            rightmost_x=dicom.rightmost_points[1], corrected=corrected,
+        )
+    else:
+        raise RuntimeError(dicom.ViewPosition)
+
+    optimal_center = calc_optimal_centers.get_image_optimal_window_info(
+        image,
+        com=np.array(image.shape) // 2,
+        window_dim=np.array(target_dims[dicom.ViewPosition]),
+        tl_br_constraint=tl_br_constraint,
+    )
+    wy = optimal_center["window_dim_y"]
+    wx = optimal_center["window_dim_x"]
+    cy = optimal_center["best_center_y"]
+    cx = optimal_center["best_center_x"]
+    top, bottom, left, right = [cy - wy//2, cy + wy//2 + (wy % 2), cx - wx//2, cx + wx//2 + (wx % 2)]
+
+    return dicom, image[top:bottom, left:right], [wy, wx], [cy, cx], optimal_center['fraction']
