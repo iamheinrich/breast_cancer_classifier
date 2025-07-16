@@ -106,6 +106,7 @@ def hist_equalization(image, hist_type = 'CLAHE', clipLimit = None, castType = n
 
 def pad_to_aspect_ratio(image, target_aspect_ratio):
     current_ratio = image.shape[0]/image.shape[1]
+    padded_image = image
     if target_aspect_ratio > current_ratio:
         # need to pad y-axis, up and down
         padding_size = int(image.shape[1] * target_aspect_ratio - image.shape[0])
