@@ -1,6 +1,6 @@
 import numpy as np
 import pydicom
-from pydicom.pixel_data_handlers.util import apply_voi_lut
+from pydicom.pixels import apply_voi_lut
 
 import cv2
 
