@@ -117,10 +117,28 @@ def pad_to_aspect_ratio(image, target_aspect_ratio):
             ps2 = ps1 + 1
 
         padded_image = np.vstack((np.tile(image[0].mean(), (ps1, image.shape[1])).astype(image.dtype), image, np.tile(image[-1].mean(), (ps2, image.shape[1])).astype(image.dtype)))
-        padded_image.shape[0]/padded_image.shape[1]
     if target_aspect_ratio < current_ratio:
         # need to pad x-axis on the right
         padding_size = int(image.shape[0] / target_aspect_ratio - image.shape[1])
+        padded_image = np.hstack((image, np.tile(image[:,-1].mean(), (image.shape[0],padding_size)).astype(image.dtype)))
+    return padded_image
+
+def pad_image_to_size(image, min_size = [0,0]):
+    padded_image = image
+    if image.shape[0] < min_size[0]:
+        # need to pad y-axis, up and down
+        padding_size = int(min_size[0] - image.shape[0])
+        if padding_size % 2 == 0:
+            ps1 = ps2 = padding_size // 2
+        else:
+            ps1 = (padding_size+1) // 2
+            ps2 = ps1 + 1
+
+        padded_image = np.vstack((np.tile(image[0].mean(), (ps1, image.shape[1])).astype(image.dtype), image, np.tile(image[-1].mean(), (ps2, image.shape[1])).astype(image.dtype)))
+
+    if image.shape[1] < min_size[1]:
+        # need to pad x-axis on the right
+        padding_size = int(min_size[1] - image.shape[1])
         padded_image = np.hstack((image, np.tile(image[:,-1].mean(), (image.shape[0],padding_size)).astype(image.dtype)))
     return padded_image
 
@@ -172,4 +190,13 @@ def extract_center(dicom, image, target_dims = {'CC': (2677, 1942), 'MLO': (2974
     cx = optimal_center["best_center_x"]
     top, bottom, left, right = [cy - wy//2, cy + wy//2 + (wy % 2), cx - wx//2, cx + wx//2 + (wx % 2)]
 
-    return dicom, image[top:bottom, left:right], [wy, wx], [cy, cx], optimal_center['fraction']
+    # if window size exceeds input image size, need to cut the area
+    top = max(0, top)
+    bottom = min(bottom, image.shape[0])
+    left = max(0, left)
+    right = min(right, image.shape[1])
+
+    cropped_image = image[top:bottom, left:right]
+    cropped_image = pad_image_to_size(cropped_image, min_size = [wy,wx])
+
+    return dicom, cropped_image, [wy, wx], [cy, cx], optimal_center['fraction']
