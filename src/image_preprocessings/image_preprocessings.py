@@ -200,3 +200,9 @@ def extract_center(dicom, image, target_dims = {'CC': (2677, 1942), 'MLO': (2974
     cropped_image = pad_image_to_size(cropped_image, min_size = [wy,wx])
 
     return dicom, cropped_image, [wy, wx], [cy, cx], optimal_center['fraction']
+
+# Set min of the image to 0. Set standard deviation of the image to 1.
+def standardize_image_range(image):
+    std_image = image / image.std()
+    std_image -= std_image.min()
+    return std_image
