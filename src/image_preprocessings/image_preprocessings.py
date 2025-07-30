@@ -116,11 +116,13 @@ def pad_to_aspect_ratio(image, target_aspect_ratio):
             ps1 = (padding_size+1) // 2
             ps2 = ps1 + 1
 
-        padded_image = np.vstack((np.tile(image[0].mean(), (ps1, image.shape[1])).astype(image.dtype), image, np.tile(image[-1].mean(), (ps2, image.shape[1])).astype(image.dtype)))
+        #padded_image = np.vstack((np.tile(image[0].mean(), (ps1, image.shape[1])).astype(image.dtype), image, np.tile(image[-1].mean(), (ps2, image.shape[1])).astype(image.dtype)))
+        padded_image = np.vstack((np.tile(0., (ps1, image.shape[1])).astype(image.dtype), image, np.tile(0., (ps2, image.shape[1])).astype(image.dtype)))
     if target_aspect_ratio < current_ratio:
         # need to pad x-axis on the right
         padding_size = int(image.shape[0] / target_aspect_ratio - image.shape[1])
-        padded_image = np.hstack((image, np.tile(image[:,-1].mean(), (image.shape[0],padding_size)).astype(image.dtype)))
+        #padded_image = np.hstack((image, np.tile(image[:,-1].mean(), (image.shape[0],padding_size)).astype(image.dtype)))
+        padded_image = np.hstack((image, np.tile(0., (image.shape[0],padding_size)).astype(image.dtype)))
     return padded_image
 
 def pad_image_to_size(image, min_size = [0,0]):
@@ -134,12 +136,14 @@ def pad_image_to_size(image, min_size = [0,0]):
             ps1 = (padding_size+1) // 2
             ps2 = ps1 + 1
 
-        padded_image = np.vstack((np.tile(image[0].mean(), (ps1, image.shape[1])).astype(image.dtype), image, np.tile(image[-1].mean(), (ps2, image.shape[1])).astype(image.dtype)))
+        #padded_image = np.vstack((np.tile(image[0].mean(), (ps1, image.shape[1])).astype(image.dtype), image, np.tile(image[-1].mean(), (ps2, image.shape[1])).astype(image.dtype)))
+        padded_image = np.vstack((np.tile(0., (ps1, image.shape[1])).astype(image.dtype), image, np.tile(0., (ps2, image.shape[1])).astype(image.dtype)))
 
     if image.shape[1] < min_size[1]:
         # need to pad x-axis on the right
         padding_size = int(min_size[1] - image.shape[1])
-        padded_image = np.hstack((image, np.tile(image[:,-1].mean(), (image.shape[0],padding_size)).astype(image.dtype)))
+        #padded_image = np.hstack((image, np.tile(image[:,-1].mean(), (image.shape[0],padding_size)).astype(image.dtype)))
+        padded_image = np.hstack((image, np.tile(0., (image.shape[0],padding_size)).astype(image.dtype)))
     return padded_image
 
 from ..cropping.crop_mammogram import crop_img_from_largest_connected, image_orientation
@@ -201,8 +205,12 @@ def extract_center(dicom, image, target_dims = {'CC': (2677, 1942), 'MLO': (2974
 
     return dicom, cropped_image, [wy, wx], [cy, cx], optimal_center['fraction']
 
-# Set min of the image to 0. Set standard deviation of the image to 1.
-def standardize_image_range(image):
-    std_image = image / image.std()
-    std_image -= std_image.min()
+# Set min of the image to 0. Set standard deviation of the image to 1 or set range to [0,1]
+def standardize_image_range(image, method = 'fixed_range'):
+    std_image = image - image.min()
+    if method == 'std':
+        scale = std_image.std()
+    if method == 'fixed_range':
+        scale = std_image.max()
+    std_image = std_image / scale
     return std_image
