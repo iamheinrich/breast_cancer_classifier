@@ -215,8 +215,8 @@ def main():
     """Main function to demonstrate usage."""
     if False:
         config = DatabaseConfig(
-            data_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/OMI-DB Sample/DATA'),
-            images_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/OMI-DB Sample/IMAGES'),
+            data_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/FFDM/DATA'),
+            images_path=Path('/Users/hendrik/Studium/Master/Thesis/Data/FFDM/IMAGES'),
             output_path=Path('/Users/hendrik/Studium/Master/Thesis/Code/breast_cancer_classifier/omi_db_data_test')
         )
     else:
